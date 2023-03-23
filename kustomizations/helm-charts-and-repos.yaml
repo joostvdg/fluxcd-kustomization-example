@@ -1,0 +1,44 @@
+apiVersion: kustomize.toolkit.fluxcd.io/v1beta2
+kind: Kustomization
+metadata:
+  name: helmcharts-crds
+  namespace: tanzu-continuousdelivery-resources
+spec:
+  interval: 3m0s
+  sourceRef:
+    kind: GitRepository
+    name: fluxcd-kustomization-example
+  path: ./helm-crds
+  prune: true
+  wait: true
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1beta2
+kind: Kustomization
+metadata:
+  name: helmcharts-repos
+  namespace: tanzu-continuousdelivery-resources
+spec:
+  dependsOn:
+    - name: helmcharts-crds
+  interval: 3m0s
+  sourceRef:
+    kind: GitRepository
+    name: fluxcd-kustomization-example
+  path: ./helm-repositories
+  prune: true
+  wait: true
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1beta2
+kind: Kustomization
+metadata:
+  name: helmcharts
+  namespace: tanzu-continuousdelivery-resources
+spec:
+  dependsOn:
+    - name: helmcharts-repos
+  interval: 3m0s
+  sourceRef:
+    kind: GitRepository
+    name: fluxcd-kustomization-example
+  path: ./helm-charts
+  prune: true
